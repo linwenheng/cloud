@@ -13,7 +13,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 
-
 public class HDFSOperation
 {
     private static Configuration conf = new Configuration();
