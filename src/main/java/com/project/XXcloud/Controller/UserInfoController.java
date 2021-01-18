@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.Date;
 
 @Controller
@@ -16,30 +17,43 @@ public class UserInfoController {
     private UserInfoService userInfoService;
 
 
-    //检测邮箱是由已经注册：未注册返回true，注册过返回false；
+
+    /*
+    *检测邮箱是由已经注册：未注册返回true，注册过返回false；
+     */
     @PostMapping("/user/email")
-    public boolean checkEmail(String email)
+    public boolean checkEmail(UserInfo userInfo)
     {
-        if (userInfoService.selectUserInfoByEmail(email) == null)
+        if (userInfoService.selectUserInfoByEmail(userInfo.getEmail()) == null)
         {
             return true;
         }
         else
             return false;
     }
-    //用户注册功能
+
+    /*
+     *用户注册：注册成功返回true，失败返回false；
+     */
     @PostMapping("/user/register")
-    public String userRegister(UserInfo userInfo)
+    public boolean userRegister(UserInfo userInfo)
     {
-        userInfoService.addUserInfo(userInfo);
-        return "login";
+        if(userInfoService.addUserInfo(userInfo) == 1)
+            return true;
+        else
+            return false;
     }
 
-    //用户登录
+    /*
+     *用户登录：邮箱密码正确返回true，失败返回false；
+     */
     @PostMapping("/user/login")
-    public String userLogin(UserInfo userInfo)
+    public boolean userLogin(UserInfo userInfo)
     {
-        userInfoService.selectUserInfo(userInfo);
-        return "login";
+        if(userInfoService.selectUserInfo(userInfo) != null)
+            return true;
+        else
+            return false;
+
     }
 }

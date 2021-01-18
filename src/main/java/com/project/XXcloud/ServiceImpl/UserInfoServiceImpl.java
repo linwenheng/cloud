@@ -21,6 +21,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfoMapper.insert(userInfo);
     }
 
+    /*
+    *查找用户（通过邮箱，密码）
+     */
     @Override
     public UserInfo selectUserInfo(UserInfo userInfo) {
         UserInfoExample userInfoExample = new UserInfoExample();
@@ -31,6 +34,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         return user;
     }
 
+    /*
+    *查找用户（通过邮箱）
+     */
     @Override
     public UserInfo selectUserInfoByEmail(String email) {
         UserInfoExample userInfoExample = new UserInfoExample();
