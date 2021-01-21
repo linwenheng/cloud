@@ -40,6 +40,17 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
+        <!-- 发送邮箱所需依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!-- 开源工具，用于读取用户操作系统，浏览器 -->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
         <!-- Mybatis generator 自动生成Mapper,Moder类 -->
         <dependency>
             <groupId>org.mybatis.generator</groupId>

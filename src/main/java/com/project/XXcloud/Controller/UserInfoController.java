@@ -1,12 +1,17 @@
 package com.project.XXcloud.Controller;
 
+import com.project.XXcloud.Email.MailServiceImpl;
 import com.project.XXcloud.Mbg.Model.UserInfo;
 import com.project.XXcloud.Service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.jws.soap.SOAPBinding;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 
 @Controller
@@ -16,7 +21,14 @@ public class UserInfoController {
     @Autowired
     private UserInfoService userInfoService;
 
+    @Autowired
+    private MailServiceImpl mailService;
 
+    @GetMapping("/test")
+    public String test()
+    {
+        return "login";
+    }
 
     /*
     *检测邮箱是由已经注册：未注册返回true，注册过返回false；
@@ -50,8 +62,14 @@ public class UserInfoController {
     @PostMapping("/user/login")
     public boolean userLogin(UserInfo userInfo)
     {
-        if(userInfoService.selectUserInfo(userInfo) != null)
+        if(userInfoService.selectUserInfo(userInfo) != null) {
+            //设置session，用于填写登录日志
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = attributes.getRequest();
+            HttpSession session = request.getSession();
+            session.setAttribute("userInfo",userInfo);
             return true;
+        }
         else
             return false;
 
