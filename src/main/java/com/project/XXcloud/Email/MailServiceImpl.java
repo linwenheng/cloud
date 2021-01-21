@@ -6,7 +6,10 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-
+/*
+*邮箱验证功能
+* 2021-1-21 林文恒 add
+ */
 @Component
 public class MailServiceImpl {
     @Autowired

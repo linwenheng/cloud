@@ -4,6 +4,7 @@ import com.project.XXcloud.Email.MailServiceImpl;
 import com.project.XXcloud.Mbg.Model.UserInfo;
 import com.project.XXcloud.Service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -27,6 +28,17 @@ public class UserInfoController {
     @GetMapping("/test")
     public String test()
     {
+        String to = "1972073918@qq.com";
+        String subject = "验证";
+        String content = "1234";
+        try {
+            mailService.sendSimpleMail(to, subject, content);
+            System.out.println("成功了");
+
+        } catch (MailException e) {
+            System.out.println("失败了");
+            e.printStackTrace();
+        }
         return "login";
     }
 
