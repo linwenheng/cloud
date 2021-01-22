@@ -47,6 +47,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         return user;
     }
 
+    /*
+    更新用户信息
+     */
     @Override
     public int updateUserInfo(UserInfo userInfo) {
         UserInfoExample userInfoExample = new UserInfoExample();
