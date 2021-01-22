@@ -48,7 +48,8 @@ public class UserInfoController {
     *检测邮箱是由已经注册：未注册返回0，注册过返回用户Id；
     * 参数为邮箱地址
      */
-    @PostMapping("/user/emailIsNoRegistered")
+    @GetMapping("/user/emailIsNoRegistered")
+    @ResponseBody
     public int emailIsNoRegistered(String email)
     {
         UserInfo userInfo = userInfoService.selectUserInfoByEmail(email);
@@ -64,7 +65,8 @@ public class UserInfoController {
     * 参数为要验证的邮箱
     * 返回值为发送给用户邮箱的验证码(4位数字的字符串）
      */
-    @PostMapping("user/emailCheck")
+    @GetMapping("/user/emailCheck")
+    @ResponseBody
     public String emailCheck(String email)
     {
         String to = email;
@@ -83,6 +85,7 @@ public class UserInfoController {
      *用户注册：注册成功返回true，失败返回false；
      */
     @PostMapping("/user/register")
+    @ResponseBody
     public boolean userRegister(UserInfo userInfo)
     {
         if(userInfoService.addUserInfo(userInfo) == 1)
@@ -92,21 +95,23 @@ public class UserInfoController {
     }
 
     /*
-     *用户登录：邮箱密码正确返回true，失败返回false；
+     *用户登录：邮箱密码正确返回1，失败返回0；
      */
-    @PostMapping("/user/login")
-    public boolean userLogin(UserInfo userInfo)
+    @GetMapping("/user/login")
+    @ResponseBody
+    public int userLogin(UserInfo userInfo)
     {
-        if(userInfoService.selectUserInfo(userInfo) != null) {
+        UserInfo userInfo1 = userInfoService.selectUserInfo(userInfo);
+        if(userInfo1 != null) {
             //设置session，用于填写登录日志
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = attributes.getRequest();
             HttpSession session = request.getSession();
-            session.setAttribute("userInfo",userInfo);
-            return true;
+            session.setAttribute("userInfo",userInfo1);
+            return userInfo1.getUserId();
         }
         else
-            return false;
+            return 0;
 
     }
 
@@ -114,6 +119,7 @@ public class UserInfoController {
     *密码修改
      */
     @PostMapping("/user/userInfoChange")
+    @ResponseBody
     public boolean userInfoChange(UserInfo userInfo)
     {
         userInfoService.updateUserInfo(userInfo);
