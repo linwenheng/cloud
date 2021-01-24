@@ -95,7 +95,7 @@ public class UserInfoController {
     }
 
     /*
-     *用户登录：邮箱密码正确返回1，失败返回0；
+     *用户登录：邮箱密码正确返回1，失败返回0或-1；
      */
     @GetMapping("/user/login")
     @ResponseBody
@@ -110,9 +110,13 @@ public class UserInfoController {
             session.setAttribute("userInfo",userInfo1);
             return userInfo1.getUserId();
         }
+        //邮箱未注册返回-1
+        else if(userInfoService.selectUserInfoByEmail(userInfo.getEmail()) == null){
+            return -1;
+        }
+        //密码错误返回0
         else
             return 0;
-
     }
 
     /*
@@ -122,7 +126,9 @@ public class UserInfoController {
     @ResponseBody
     public boolean userInfoChange(UserInfo userInfo)
     {
-        userInfoService.updateUserInfo(userInfo);
+        UserInfo user = userInfoService.selectUserInfoByEmail(userInfo.getEmail());
+        if (user == null) return false;
+        userInfoService.updateUserInfo(user);
         return true;
     }
 }
