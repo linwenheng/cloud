@@ -140,7 +140,7 @@ public class HDFSOperation
     }
 
     /*
-     * 删除目录
+     * 功能删除目录
      * 参数1：用户邮箱
      * 返回值：删除状态：成功删除返回true,否则返回false
      * */
