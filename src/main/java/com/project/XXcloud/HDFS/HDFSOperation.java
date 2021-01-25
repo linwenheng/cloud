@@ -138,4 +138,20 @@ public class HDFSOperation
         fileSystem.close();
         return isDeleted;
     }
+
+    /*
+     * 删除目录
+     * 参数1：用户邮箱
+     * 返回值：删除状态：成功删除返回true,否则返回false
+     * */
+    public static boolean deleteFile(String email) throws IOException
+    {
+        String uri="hdfs://"+ip+":"+port+"/"+email;
+        fileSystem=FileSystem.get(URI.create(uri),conf);
+        Path delef;
+        delef=new Path(uri);
+        boolean isDeleted= fileSystem.delete(delef,true);
+        fileSystem.close();
+        return isDeleted;
+    }
 }
