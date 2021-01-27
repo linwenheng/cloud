@@ -1,15 +1,14 @@
 package com.project.XXcloud.HDFS;
 
 import XMLUtil.XMLUtil;
+import com.project.XXcloud.SparkSense.SparkSense;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -31,7 +30,7 @@ public class HDFSOperation
         }
     }
 
-    /*创建目录
+    /**创建目录
      * 参数1：用户邮箱
      * 返回值：创建状态，成功返回0
      * */
@@ -45,7 +44,7 @@ public class HDFSOperation
         return 0;
     }
 
-    /*
+    /**
      *下载文件
      * 参数1：用户邮箱； 参数2：文件名； 参数3： 输出流
      * 返回值：下载结果：成功返回0，文件不存在返回-1
@@ -76,8 +75,8 @@ public class HDFSOperation
         return 0;
     }
 
-    /*
-     *上传文件
+    /**
+     *上传文件，供客户端调用
      * 参数1：用户邮箱； 参数2：文件名； 参数3：输入流
      * 返回值：上传结果：成功返回0
      * */
@@ -88,10 +87,11 @@ public class HDFSOperation
         OutputStream out=fileSystem.create(new Path(uri));
         IOUtils.copyBytes(in,out,4096,true);
         fileSystem.close();
+        SparkSense.analyzeTextFile(email,fileName);
         return 0;
     }
 
-    /*
+    /**
     * 获取指定目录下的文件列表
     * 参数1：用户邮箱
     * 返回值：文件名列表 ArrayList
@@ -123,7 +123,7 @@ public class HDFSOperation
         return fileList;
     }
 
-    /*
+    /**
     * 删除文件
     * 参数1：用户邮箱； 参数2：文件名
     * 返回值：删除状态：成功删除返回true,否则返回false
@@ -137,5 +137,35 @@ public class HDFSOperation
         boolean isDeleted= fileSystem.delete(delef,true);
         fileSystem.close();
         return isDeleted;
+    }
+
+    /**
+     * 功能删除目录
+     * 参数1：用户邮箱
+     * 返回值：删除状态：成功删除返回true,否则返回false
+     * */
+    public static boolean deleteFile(String email) throws IOException
+    {
+        String uri="hdfs://"+ip+":"+port+"/"+email;
+        fileSystem=FileSystem.get(URI.create(uri),conf);
+        Path delef;
+        delef=new Path(uri);
+        boolean isDeleted= fileSystem.delete(delef,true);
+        fileSystem.close();
+        return isDeleted;
+    }
+
+
+    /**
+     * 功能：写入文件，供Spark调用
+     * */
+    public static int writeFile(String email, String fileName,String sourceName) throws IOException {
+        FileInputStream fis=new FileInputStream(new File(sourceName));
+        String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
+        fileSystem=FileSystem.get(URI.create(uri),conf);
+        OutputStream out=fileSystem.create(new Path(uri));
+        IOUtils.copyBytes(fis,out,4096,true);
+        fileSystem.close();
+        return 0;
     }
 }
