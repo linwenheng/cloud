@@ -69,11 +69,11 @@ public class UserFileController {
     @ResponseBody
     public File download(String filename,String email)
     {
-        File dest = new File(filename);
+        File dest = null;
         try
         {
 
-            HDFSOperation.downloadFile(email,filename,dest);
+           dest= HDFSOperation.downloadFile(email,filename);
 
             LOGGER.info("下载成功");
         }
