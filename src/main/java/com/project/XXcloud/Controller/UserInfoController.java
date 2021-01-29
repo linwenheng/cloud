@@ -1,6 +1,7 @@
 package com.project.XXcloud.Controller;
 
 import com.project.XXcloud.Email.MailServiceImpl;
+import com.project.XXcloud.HDFS.HDFSOperation;
 import com.project.XXcloud.Mbg.Model.UserInfo;
 import com.project.XXcloud.Service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
+import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
 
@@ -88,8 +93,14 @@ public class UserInfoController {
     @ResponseBody
     public boolean userRegister(UserInfo userInfo)
     {
-        if(userInfoService.addUserInfo(userInfo) == 1)
+        if(userInfoService.addUserInfo(userInfo) == 1) {
+            try {
+                HDFSOperation.createDir(userInfo.getEmail());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
+        }
         else
             return false;
     }
@@ -127,8 +138,12 @@ public class UserInfoController {
     public boolean userInfoChange(UserInfo userInfo)
     {
         UserInfo user = userInfoService.selectUserInfoByEmail(userInfo.getEmail());
+
+        user.setPassword(userInfo.getPassword());
         if (user == null) return false;
         userInfoService.updateUserInfo(user);
         return true;
     }
+
+
 }
