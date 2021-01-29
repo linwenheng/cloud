@@ -6,6 +6,7 @@ import com.project.XXcloud.Mbg.Model.UserFile;
 import com.project.XXcloud.Service.UserFileService;
 import com.project.XXcloud.Service.UserInfoService;
 import io.netty.util.internal.UnstableApi;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.Date;
 
 @Controller
@@ -28,6 +30,11 @@ public class UserFileController {
     @GetMapping("/upload")
     public String upload() {
         return "upload";
+    }
+
+    @GetMapping("/download")
+    public String download() {
+        return "download";
     }
     /*
      *文件上传
@@ -43,11 +50,9 @@ public class UserFileController {
         }
 
         String fileName = file.getOriginalFilename();
-        File dest = new File(fileName);
         try {
-            file.transferTo(dest);
 
-            HDFSOperation.uploadFile(email,fileName,dest);
+            HDFSOperation.uploadFile(email,fileName,file.getBytes());
 
             UserFile userFile = new UserFile();
             userFile.setCreateDate(new Date());
@@ -67,13 +72,17 @@ public class UserFileController {
      */
     @PostMapping("/download")
     @ResponseBody
-    public File download(String filename,String email)
-    {
-        File dest = null;
+    public void download(String filename, String email, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String mimeType=request.getServletContext().getMimeType(filename);
+        response.setContentType(mimeType);
+        response.setHeader("Content-Disposition","attachement;filename="+filename);
         try
         {
-
-           dest= HDFSOperation.downloadFile(email,filename);
+            OutputStream os=response.getOutputStream();
+            HDFSOperation.downloadFile(email,filename,os);
+            os.flush();
+//            IOUtils.copy(in,response.getOutputStream());
 
             LOGGER.info("下载成功");
         }
@@ -81,6 +90,6 @@ public class UserFileController {
         {
             LOGGER.error(e.toString(), e);
         }
-        return dest;
+
     }
 }
