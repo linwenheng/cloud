@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,28 +51,9 @@ public class HDFSOperation
      * 参数1：用户邮箱； 参数2：文件名； 参数3： 输出流
      * 返回值：下载结果：成功返回0，文件不存在返回-1
      * */
-    public static int downloadFile(String email, String fileName,OutputStream out) throws IOException {
+    public static int downloadFile(String email, String fileName,File file) throws IOException {
 
-        String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
 
-        Configuration conf=new Configuration();
-        fileSystem= FileSystem.get(URI.create(uri),conf);
-        InputStream in=null;
-
-        try
-        {
-            in=fileSystem.open(new Path(uri));
-            IOUtils.copyBytes(in,out,4096,false);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return -1;//文件不存在
-        }
-        finally {
-            IOUtils.closeStream(in);
-            fileSystem.close();
-        }
 
         return 0;
     }
@@ -81,13 +63,9 @@ public class HDFSOperation
      * 参数1：用户邮箱； 参数2：文件名； 参数3：输入流
      * 返回值：上传结果：成功返回0
      * */
-    public static int uploadFile(String email, String fileName, InputStream in) throws IOException
+    public static int uploadFile(String email, String fileName, File file) throws IOException
     {
-        String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
-        fileSystem=FileSystem.get(URI.create(uri),conf);
-        OutputStream out=fileSystem.create(new Path(uri));
-        IOUtils.copyBytes(in,out,4096,true);
-        fileSystem.close();
+
         return 0;
     }
 
