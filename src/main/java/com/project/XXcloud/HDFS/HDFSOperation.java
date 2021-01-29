@@ -47,12 +47,13 @@ public class HDFSOperation
     /**
      *下载文件
      * 参数1：用户邮箱； 参数2：文件名； 参数3： 输出流
-     * 返回值：下载结果：成功返回0，文件不存在返回-1
+     * 返回值：下载结果：成功file对象，文件不存在返回null
      * */
-    public static int downloadFile(String email, String fileName,OutputStream out) throws IOException {
+    public static File downloadFile(String email, String fileName) throws IOException {
 
         String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
-
+        File file=new File("C:\\Users\\Amaze\\Desktop\\testFiles\\"+fileName);
+        OutputStream outputStream=new BufferedOutputStream(new FileOutputStream(file));
         Configuration conf=new Configuration();
         fileSystem= FileSystem.get(URI.create(uri),conf);
         InputStream in=null;
@@ -60,33 +61,53 @@ public class HDFSOperation
         try
         {
             in=fileSystem.open(new Path(uri));
-            IOUtils.copyBytes(in,out,4096,false);
+            IOUtils.copyBytes(in,outputStream,4096,false);
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            return -1;//文件不存在
+            return null;//文件不存在
         }
         finally {
+            outputStream.close();
             IOUtils.closeStream(in);
             fileSystem.close();
         }
 
-        return 0;
+        return file;
     }
+
+//    /**
+//     *上传文件，供客户端调用
+//     * 参数1：用户邮箱； 参数2：文件名； 参数3：输入流
+//     * 返回值：上传结果：成功返回0
+//     * */
+//    public static int uploadFile(String email, String fileName, InputStream in) throws IOException
+//    {
+//        String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
+//        fileSystem=FileSystem.get(URI.create(uri),conf);
+//        OutputStream out=fileSystem.create(new Path(uri));
+//        IOUtils.copyBytes(in,out,4096,true);
+//        fileSystem.close();
+//        SparkSense.analyzeTextFile(email,fileName);
+//        return 0;
+//    }
 
     /**
      *上传文件，供客户端调用
-     * 参数1：用户邮箱； 参数2：文件名； 参数3：输入流
+     * 参数1：用户邮箱； 参数2：文件名； 参数3：文件对象
      * 返回值：上传结果：成功返回0
      * */
-    public static int uploadFile(String email, String fileName, InputStream in) throws IOException
+    public static int uploadFile(String email, String fileName, File file) throws IOException
     {
         String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
         fileSystem=FileSystem.get(URI.create(uri),conf);
         OutputStream out=fileSystem.create(new Path(uri));
+        InputStream in=new BufferedInputStream(new FileInputStream(file));
         IOUtils.copyBytes(in,out,4096,true);
+        IOUtils.closeStreams(out);
         fileSystem.close();
+        in.close();
         SparkSense.analyzeTextFile(email,fileName);
         return 0;
     }
