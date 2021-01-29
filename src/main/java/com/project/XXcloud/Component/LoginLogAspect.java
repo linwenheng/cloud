@@ -45,7 +45,7 @@ public class LoginLogAspect {
     @AfterReturning(pointcut = "weblog()",returning = "ret")
     public void doAfterReturning(JoinPoint joinPoint, Object ret) throws Throwable{
         //登录失败不记录
-        if(ret.equals(false)) return;
+        if(ret.equals(0)) return;
         //获取当前请求对象
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
