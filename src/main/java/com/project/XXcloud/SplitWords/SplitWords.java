@@ -16,7 +16,7 @@ public class SplitWords
     public static String splitWords(String line)
     {
         //保存返回结果
-        StringBuilder sb=new StringBuilder(line);
+        StringBuffer sb=new StringBuffer(line);
 
         //构建IK分词器，使用smart分词模式
         Analyzer analyzer = new IKAnalyzer(true);
@@ -41,12 +41,12 @@ public class SplitWords
                 if(checkSensive(term.toString()))
                 {
                     int num=offset.endOffset()-offset.startOffset();
-                    String s_replace="";
+                    StringBuffer s_replace=new StringBuffer();
                     for(int i=0;i<num;++i)
                     {
-                        s_replace+="*";
+                        s_replace.append("*");
                     }
-                    sb.replace(offset.startOffset(),offset.endOffset(),s_replace);
+                    sb.replace(offset.startOffset(),offset.endOffset(),s_replace.toString());
                 }
             }
             //关闭TokenStream（关闭StringReader）
