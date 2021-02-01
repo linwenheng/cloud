@@ -12,29 +12,25 @@ object SparkSense {
   private val hdfsConf = XMLUtil.getHdfsConf();
   private val ip = hdfsConf(0);
   private val port = hdfsConf(1);
-  private var conf: SparkConf = null;
-  private var sc: SparkContext = null;
+  private var conf: SparkConf = null
+  private var sc: SparkContext = null
 
 
   /**
    *
    * */
-  private def initialSpark(appName: String): Unit = {
-    conf = new SparkConf().setAppName(appName).setMaster("local[*]");
-    sc = new SparkContext(conf);
 
-  }
-
-
-
-
+  def initialSpark():Unit=
+    {
+      conf= new SparkConf().setAppName(System.currentTimeMillis().toString).setMaster("local[*]");;
+      sc= new SparkContext(conf);
+    }
   /**
    * 功能：分析单个文本文件，屏蔽敏感词
    * 传入参数：参数1：用户文件夹名称（即用户邮箱），参数2：文件名
    * 返回值：无
    * */
   def analyzeTextFile(email: String, fileName: String): Unit = {
-    initialSpark(email + "_" + fileName);
 
     val data = sc.textFile("hdfs://" + ip + ":" + port + "/" + email + "/" + fileName);
     data.map(x =>SplitWords.splitWords(x)).repartition(1).saveAsTextFile("C:\\Users\\Amaze\\Desktop\\testFiles\\" + email + "tmp");
@@ -44,7 +40,6 @@ object SparkSense {
     deleteDir(path);
 
   }
-
 
   /**
    * 删除一个文件夹,及其子目录

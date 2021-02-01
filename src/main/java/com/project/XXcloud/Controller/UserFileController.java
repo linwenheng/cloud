@@ -36,6 +36,11 @@ public class UserFileController {
     public String download() {
         return "download";
     }
+
+    @GetMapping("/delete")
+    public String delete() {
+        return "delete";
+    }
     /*
      *文件上传
      * 第一个参数为上传的文件，第二个参数为用户邮箱
@@ -91,5 +96,18 @@ public class UserFileController {
             LOGGER.error(e.toString(), e);
         }
 
+    }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public void delete(String filename,String email) throws IOException {
+        if(HDFSOperation.deleteFile(email,filename))
+        {
+            LOGGER.info("删除成果");
+        }
+        else
+        {
+            LOGGER.info("删除失败");
+        }
     }
 }
