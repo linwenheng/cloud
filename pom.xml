@@ -120,7 +120,7 @@
         </dependency>
         <!--Hadoop & Spark dependencies-->
 
-        <!--Lucene-->
+        <!--Lucene 全文检索框架-->
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
@@ -130,6 +130,23 @@
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <!--POI Word文档 API-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
             <version>4.0.0</version>
         </dependency>
 

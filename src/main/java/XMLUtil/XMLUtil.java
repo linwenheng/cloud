@@ -30,4 +30,20 @@ public class XMLUtil
 
         return strings;
     }
+
+    public static Object getFileProcessClass(String tagName) throws Exception {
+        DocumentBuilderFactory dFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = dFactory.newDocumentBuilder();
+        Document doc;
+        doc = builder.parse(new File("config.xml"));
+
+        NodeList nl=doc.getElementsByTagName(tagName);
+        Node classNode=nl.item(0).getFirstChild();
+        String className=classNode.getNodeValue();
+
+        Class c=Class.forName(className);
+        Object obj=c.newInstance();
+
+        return obj;
+    }
 }

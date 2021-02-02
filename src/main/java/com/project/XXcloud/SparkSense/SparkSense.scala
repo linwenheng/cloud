@@ -1,6 +1,7 @@
 package com.project.XXcloud.SparkSense
 
 import java.io.File
+import java.util
 
 import XMLUtil.XMLUtil
 import com.project.XXcloud.HDFS.HDFSOperation
@@ -39,6 +40,14 @@ object SparkSense {
     val path: File = new File("C:\\Users\\Amaze\\Desktop\\testFiles\\" + email + "tmp");
     deleteDir(path);
 
+  }
+
+  def analyzeWordText(originText:Seq[String],num:Int):util.ArrayList[String]=
+  {
+    val resultText:util.ArrayList[String]=new util.ArrayList[String](num);
+    val data=sc.parallelize(originText);
+    data.map(x=>SplitWords.splitWords(x)).zipWithIndex().collect().map(x=>{resultText.add(x._2.toInt,x._1);x});
+    resultText;
   }
 
   /**

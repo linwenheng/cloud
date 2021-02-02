@@ -68,6 +68,8 @@ public class UserFileController {
             return 1;
         } catch (IOException e) {
             LOGGER.error(e.toString(), e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return -1;
     }

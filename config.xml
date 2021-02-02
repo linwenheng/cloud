@@ -4,4 +4,8 @@
         <ip>127.0.0.1</ip>
         <port>9000</port>
     </hdfs_config>
+    <fileProcessClass>
+        <txt>com.project.XXcloud.FileProcess.TxtFileProcess</txt>
+        <doc>com.project.XXcloud.FileProcess.DocFileProcess</doc>
+    </fileProcessClass>
 </config>
