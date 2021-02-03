@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class UserFileController {
@@ -40,6 +41,26 @@ public class UserFileController {
     @GetMapping("/delete")
     public String delete() {
         return "delete";
+    }
+    /*
+    *查询文件列表
+     */
+    @PostMapping("/file/list")
+    @ResponseBody
+    public List<UserFile> getFileList(int userId)
+    {
+        return userFileService.seleteFile(userId);
+    }
+
+    /*
+    *删除文件
+     */
+    @PostMapping("/file/delete")
+    @ResponseBody
+    public int deleteFile(int userId,String email,String filename) throws IOException
+    {
+        HDFSOperation.deleteFile(email,filename);
+        return userFileService.deleteFile(userId,filename);
     }
     /*
      *文件上传

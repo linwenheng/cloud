@@ -47,6 +47,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         return user;
     }
 
+    @Override
+    public UserInfo selectUserInfoByID(int ID) {
+        return userInfoMapper.selectByPrimaryKey(ID);
+    }
+
     /*
     更新用户信息
      */
