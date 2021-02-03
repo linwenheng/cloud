@@ -1,12 +1,14 @@
 package com.project.XXcloud.FileProcess;
 
-
 import com.project.XXcloud.SparkSense.SparkSense;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
@@ -15,47 +17,60 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DocFileProcess implements FileProcess
+public class DocxFileProcess implements FileProcess
 {
 
     @Override
-    public void fileAnalyze(String email, String fileName,FileSystem fileSystem,String url)
+    public void fileAnalyze(String email, String fileName, FileSystem fileSystem, String url)
     {
         InputStream fis=null;
-        Range range=null;
+
         OutputStream fos=null;
         try
         {
             Path path=new Path(url);
             fis=fileSystem.open(path);
-            HWPFDocument hwpfDocument=new HWPFDocument(fis);
-            range=hwpfDocument.getRange();
+            XWPFDocument xwpfDocument=new XWPFDocument(fis);
 
+            List<XWPFParagraph> paragraphs=xwpfDocument.getParagraphs();
+            List<XWPFRun> xwpfRuns=new ArrayList<XWPFRun>();
+            List<XWPFRun> tmpRuns=new ArrayList<XWPFRun>();
             List<String> originText=new ArrayList<String>();
 
-            int num=range.numParagraphs();
+            int num=paragraphs.size();
+            int runNum=0;
             for(int i=0;i<num;++i)
             {
-                originText.add(range.getParagraph(i).text());
+                tmpRuns=paragraphs.get(i).getRuns();
+                runNum=tmpRuns.size();
+                for(int j=0;j<runNum;++j)
+                {
+                    xwpfRuns.add(tmpRuns.get(i));
+                    originText.add(tmpRuns.get(i).getText(0));
+                }
+
             }
             Seq<String> tmpSeq = JavaConverters.asScalaIteratorConverter(originText.iterator()).asScala().toSeq();
             List<String> resultText= SparkSense.analyzeWordText(tmpSeq,num);
-            for(int i=0;i<num;++i)
+            for(int i=0;i<runNum;++i)
             {
-                Paragraph p=range.getParagraph(i);
-                String content=p.text();
+                XWPFRun run=xwpfRuns.get(i);
+                String content=run.getText(0);
+
                 if(!(resultText.get(i).equals(content)))
-                    p.replaceText(content,resultText.get(i));
+                    run.setText(resultText.get(i));
             }
-           fos=fileSystem.create(path);
-            hwpfDocument.write(fos);
+
+
+            fos=fileSystem.create(path);
+            xwpfDocument.write(fos);
+
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
         finally {
-            range.delete();
             try
             {
                 fos.close();
@@ -64,6 +79,7 @@ public class DocFileProcess implements FileProcess
             {
                 e.printStackTrace();
             }
+
         }
     }
 }

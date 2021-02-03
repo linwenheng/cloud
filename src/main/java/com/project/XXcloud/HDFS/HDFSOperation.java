@@ -89,6 +89,7 @@ public class HDFSOperation
         IOUtils.closeStreams(out);
 
         byteArrayInputStream.close();
+        out.close();
 
         String[] strings=fileName.split("\\.");
         String tagName=strings[1];
@@ -172,6 +173,9 @@ public class HDFSOperation
         fileSystem=FileSystem.get(URI.create(uri),conf);
         OutputStream out=fileSystem.create(new Path(uri));
         IOUtils.copyBytes(fis,out,4096,true);
+
+        fis.close();
+        out.close();
         fileSystem.close();
         return 0;
     }
