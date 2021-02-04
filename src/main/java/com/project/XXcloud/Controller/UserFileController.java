@@ -121,16 +121,5 @@ public class UserFileController {
 
     }
 
-    @PostMapping("/delete")
-    @ResponseBody
-    public void delete(String filename,String email) throws IOException {
-        if(HDFSOperation.deleteFile(email,filename))
-        {
-            LOGGER.info("删除成果");
-        }
-        else
-        {
-            LOGGER.info("删除失败");
-        }
-    }
+
 }

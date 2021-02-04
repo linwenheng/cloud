@@ -46,4 +46,14 @@ public class XMLUtil
 
         return obj;
     }
+
+    public static String getTemDir() throws Exception {
+        DocumentBuilderFactory dFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = dFactory.newDocumentBuilder();
+        Document doc;
+        doc = builder.parse(new File("config.xml"));
+        NodeList nl = doc.getElementsByTagName("temDir");
+        Node classNode = nl.item(0).getFirstChild();
+        return classNode.getNodeValue();
+    }
 }

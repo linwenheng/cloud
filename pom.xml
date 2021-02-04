@@ -172,6 +172,12 @@
             <version>4.0.0</version>
         </dependency>
 
+        <!--图片文字识别工具包-->
+        <dependency>
+            <groupId>net.sourceforge.tess4j</groupId>
+            <artifactId>tess4j</artifactId>
+            <version>3.2.1</version>
+        </dependency>
     </dependencies>
 
     <build>
