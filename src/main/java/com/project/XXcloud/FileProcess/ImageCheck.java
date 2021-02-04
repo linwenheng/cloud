@@ -47,7 +47,7 @@ public class ImageCheck
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        imageFile.delete();
         return false;
     }
 }

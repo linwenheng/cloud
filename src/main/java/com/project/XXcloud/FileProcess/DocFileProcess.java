@@ -1,15 +1,21 @@
 package com.project.XXcloud.FileProcess;
 
 
+import XMLUtil.XMLUtil;
 import com.project.XXcloud.SparkSense.SparkSense;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.model.PicturesTable;
+import org.apache.poi.hwpf.usermodel.CharacterRun;
 import org.apache.poi.hwpf.usermodel.Paragraph;
+import org.apache.poi.hwpf.usermodel.Picture;
 import org.apache.poi.hwpf.usermodel.Range;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -26,6 +32,7 @@ public class DocFileProcess implements FileProcess
         OutputStream fos=null;
         try
         {
+            String tmpPath=XMLUtil.getTemDir();
             Path path=new Path(url);
             fis=fileSystem.open(path);
             HWPFDocument hwpfDocument=new HWPFDocument(fis);
@@ -33,6 +40,7 @@ public class DocFileProcess implements FileProcess
 
             List<String> originText=new ArrayList<String>();
 
+            //处理文字
             int num=range.numParagraphs();
             for(int i=0;i<num;++i)
             {
@@ -47,6 +55,44 @@ public class DocFileProcess implements FileProcess
                 if(!(resultText.get(i).equals(content)))
                     p.replaceText(content,resultText.get(i));
             }
+
+
+            //处理图片
+            byte[] dataStream=hwpfDocument.getDataStream();
+            int numChar=range.numCharacterRuns();
+
+
+            PicturesTable pTable=new PicturesTable(hwpfDocument,dataStream,new byte[1024]);
+            for(int j=0;j<numChar;++j)
+            {
+                CharacterRun cRun=range.getCharacterRun(j);
+                //是否有图片
+                boolean has=pTable.hasPicture(cRun);
+                if(has)
+                {
+                    Picture picture=pTable.extractPicture(cRun,true);
+
+                    //大于300bits的图片才弄下来
+                    if(picture.getSize()>300)
+                    {
+                        String picTmpPath=tmpPath+"/"+email+fileName+j+".png";
+                        File tmpFile=new File(picTmpPath);
+                        FileOutputStream imgFos=new FileOutputStream(picTmpPath);
+                        picture.writeImageContent(imgFos);
+                        imgFos.flush();
+                        imgFos.close();
+                        if(ImageCheck.imageCheck(picTmpPath))
+                        {
+                            cRun.delete();
+                        }
+                        tmpFile.delete();
+                    }
+
+                }
+            }
+
+
+
            fos=fileSystem.create(path);
             hwpfDocument.write(fos);
         }
