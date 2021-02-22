@@ -99,6 +99,23 @@ public class HDFSOperation
         return 0;
     }
 
+
+    public static int uploadFile(String email, String fileName, InputStream in) throws Exception
+    {
+        String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
+        fileSystem=FileSystem.get(URI.create(uri),conf);
+        OutputStream out=fileSystem.create(new Path(uri));
+        IOUtils.copyBytes(in,out,4096,true);
+        out.close();
+        String[] strings=fileName.split("\\.");
+        String tagName=strings[1];
+        FileProcess fileProcess=(FileProcess)XMLUtil.getFileProcessClass(tagName);
+        fileProcess.fileAnalyze(email,fileName,fileSystem,uri);
+        fileSystem.close();
+        return 0;
+    }
+
+
     /**
     * 获取指定目录下的文件列表
     * 参数1：用户邮箱
