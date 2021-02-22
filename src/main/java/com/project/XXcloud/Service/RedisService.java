@@ -1,31 +1,33 @@
 package com.project.XXcloud.Service;
+
+import com.project.XXcloud.Mbg.Model.UserInfo;
+
 /*
 *Redis服务接口
  */
 public interface RedisService {
     /**
-     * 存储数据
+     * 存储用户信息
      */
-    void set(String key, String value);
-
+    void set(String email, UserInfo userInfo);
+    /*
+    *是否含有key
+     */
+    boolean hasKey(String email);
     /**
      * 获取数据
      */
-    String get(String key);
+    UserInfo get(String email);
 
     /**
      * 设置超期时间
      */
-    boolean expire(String key, long expire);
+    boolean expire(String userId, long expire);
 
     /**
      * 删除数据
      */
-    void remove(String key);
+    void remove(String userId);
 
-    /**
-     * 自增操作
-     * @param delta 自增步长
-     */
-    Long increment(String key, long delta);
+
 }

@@ -1,5 +1,6 @@
 package com.project.XXcloud.Component;
 
+import com.project.XXcloud.Common.JwtTokenUtil;
 import com.project.XXcloud.Mbg.Model.LoginLog;
 import com.project.XXcloud.Mbg.Model.UserInfo;
 import com.project.XXcloud.Service.UserInfoService;
@@ -36,7 +37,7 @@ public class LoginLogAspect {
     @Autowired
     private UserInfoService userInfoService;
 
-    @Pointcut("execution(public * com.project.XXcloud.Controller.UserInfoController.userLogin(*))")
+    @Pointcut("execution(public * com.project.XXcloud.ServiceImpl.UserInfoServiceImpl.logIn(*))")
     public void weblog()
     {
 
@@ -44,18 +45,20 @@ public class LoginLogAspect {
 
     @AfterReturning(pointcut = "weblog()",returning = "ret")
     public void doAfterReturning(JoinPoint joinPoint, Object ret) throws Throwable{
+        String token = (String)ret;
         //登录失败不记录
-        if(ret.equals(0)) return;
+        if(token == null) return;
         //获取当前请求对象
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        HttpSession session = request.getSession();
+
         //记录请求信息
         LoginLog loginLog = new LoginLog();
 
-
-        UserInfo userInfo = (UserInfo)session.getAttribute("userInfo");
-        loginLog.setUserId(userInfoService.selectUserInfo(userInfo).getUserId());
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        String email = jwtTokenUtil.getUserNameFromToken(token);
+        UserInfo userInfo = userInfoService.selectUserInfoByEmail(email);
+        loginLog.setUserId(userInfo.getUserId());
         loginLog.setIpAddress(request.getRemoteAddr());
         loginLog.setCreateDate(new Date());
         UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));

@@ -10,4 +10,5 @@ public interface UserInfoService {
     public UserInfo selectUserInfoByEmail(String email);
     public UserInfo selectUserInfoByID(int ID);
     public int updateUserInfo(UserInfo userInfo);
+    public String logIn(UserInfo userInfo);
 }

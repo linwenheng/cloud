@@ -1,7 +1,9 @@
 package com.project.XXcloud.ServiceImpl;
 
+import com.project.XXcloud.Mbg.Model.UserInfo;
 import com.project.XXcloud.Service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,28 +14,34 @@ public class RedisServiceImpl implements RedisService {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
     @Override
-    public void set(String key, String value) {
-        stringRedisTemplate.opsForValue().set(key,value);
+    public void set(String email, UserInfo userInfo) {
+
+        //stringRedisTemplate.opsForValue().set(key,value);
+        redisTemplate.opsForValue().set("email:" + email,userInfo);
     }
 
     @Override
-    public String get(String key) {
-        return stringRedisTemplate.opsForValue().get(key);
+    public boolean hasKey(String email) {
+        return redisTemplate.hasKey("email:" + email);
     }
 
     @Override
-    public boolean expire(String key, long expire) {
-        return stringRedisTemplate.expire(key,expire, TimeUnit.SECONDS);
+    public UserInfo get(String email) {
+        return (UserInfo)redisTemplate.opsForValue().get("email:" + email);
     }
 
     @Override
-    public void remove(String key) {
-        stringRedisTemplate.delete(key);
+    public boolean expire(String email, long expire) {
+        return redisTemplate.expire("email:" + email,expire, TimeUnit.SECONDS);
     }
 
     @Override
-    public Long increment(String key, long delta) {
-        return stringRedisTemplate.opsForValue().increment(key,delta);
+    public void remove(String email) {
+        redisTemplate.delete("email:" + email);
     }
+
 }

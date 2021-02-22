@@ -34,7 +34,7 @@ JwtAuthenticationTokenFilter：在用户名和密码校验前添加的过滤器�
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserInfoService userInfoService;
@@ -57,9 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/favicon.ico",
                         "/**/*.html",
                         "/**/*.css",
-                        "/**/*.js",
-                        "/swagger-resources/**",
-                        "/v2/api-docs/**"
+                        "/**/*.js"
                 )
                 .permitAll()
                 .antMatchers("/user/login", "/user/register")// 对登录注册要允许匿名访问
@@ -93,8 +91,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public UserDetailsService userDetailsService() {
         //获取登录用户信息
-        return userId -> {
-            UserInfo userInfo = userInfoService.selectUserInfoByID(Integer.getInteger(userId));
+        return email -> {
+            UserInfo userInfo = userInfoService.selectUserInfoByEmail(email);
             if (userInfo != null) {
 
                 return new UserInfoDetails(userInfo);

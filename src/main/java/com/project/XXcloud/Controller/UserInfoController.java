@@ -3,8 +3,10 @@ package com.project.XXcloud.Controller;
 import com.project.XXcloud.Email.MailServiceImpl;
 import com.project.XXcloud.HDFS.HDFSOperation;
 import com.project.XXcloud.Mbg.Model.UserInfo;
+import com.project.XXcloud.Service.RedisService;
 import com.project.XXcloud.Service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,11 @@ public class UserInfoController {
     @Autowired
     private MailServiceImpl mailService;
 
+    @Autowired
+    private RedisService redisService;
+
+    @Value("${redis.key.expire.userInfo}")
+    private Long USERINFO_EXPIRE_SECONDS;
 
 //    @GetMapping("/test")
 //    public String test()
@@ -106,28 +113,18 @@ public class UserInfoController {
     }
 
     /*
-     *用户登录：邮箱密码正确返回1，失败返回0或-1；
+     *用户登录：邮箱密码正确返回1，失败返回0；
      */
     @GetMapping("/user/login")
     @ResponseBody
     public int userLogin(UserInfo userInfo)
     {
-        UserInfo userInfo1 = userInfoService.selectUserInfo(userInfo);
-        if(userInfo1 != null) {
-            //设置session，用于填写登录日志
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            HttpServletRequest request = attributes.getRequest();
-            HttpSession session = request.getSession();
-            session.setAttribute("userInfo",userInfo1);
-            return userInfo1.getUserId();
-        }
-        //邮箱未注册返回-1
-        else if(userInfoService.selectUserInfoByEmail(userInfo.getEmail()) == null){
-            return -1;
-        }
-        //密码错误返回0
-        else
+        String token = userInfoService.logIn(userInfo);
+        if(token == null){
             return 0;
+        }
+        else
+            return 1;
     }
 
     /*
@@ -137,8 +134,14 @@ public class UserInfoController {
     @ResponseBody
     public boolean userInfoChange(UserInfo userInfo)
     {
-        UserInfo user = userInfoService.selectUserInfoByEmail(userInfo.getEmail());
-
+        UserInfo user;
+        if(redisService.hasKey(userInfo.getEmail()))
+        {
+            user = redisService.get(userInfo.getEmail());
+        }
+        else {
+            user = userInfoService.selectUserInfoByEmail(userInfo.getEmail());
+        }
         user.setPassword(userInfo.getPassword());
         if (user == null) return false;
         userInfoService.updateUserInfo(user);
