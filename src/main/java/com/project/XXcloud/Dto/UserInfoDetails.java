@@ -24,10 +24,12 @@ public class UserInfoDetails implements UserDetails {
     public String getPassword() {
         return userInfo.getPassword();
     }
-
+    /*
+    *使用email代替用户名
+     */
     @Override
     public String getUsername() {
-        return userInfo.getUserName();
+        return userInfo.getEmail();
     }
 
     @Override

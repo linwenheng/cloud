@@ -1,7 +1,7 @@
 package com.project.XXcloud.HDFS;
 
 import XMLUtil.XMLUtil;
-import com.project.XXcloud.SparkSense.SparkSense;
+//import com.project.XXcloud.SparkSense.SparkSense;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -88,7 +88,7 @@ public class HDFSOperation
         IOUtils.closeStreams(out);
         fileSystem.close();
         byteArrayInputStream.close();
-        SparkSense.analyzeTextFile(email,fileName);
+        //SparkSense.analyzeTextFile(email,fileName);
         return 0;
     }
 
