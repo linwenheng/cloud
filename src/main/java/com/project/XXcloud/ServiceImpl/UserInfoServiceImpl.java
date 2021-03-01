@@ -5,7 +5,7 @@ import com.project.XXcloud.Mbg.Mapper.UserInfoMapper;
 import com.project.XXcloud.Mbg.Model.UserInfo;
 import com.project.XXcloud.Mbg.Model.UserInfoExample;
 import com.project.XXcloud.Service.UserInfoService;
-import org.omg.CORBA.UserException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
