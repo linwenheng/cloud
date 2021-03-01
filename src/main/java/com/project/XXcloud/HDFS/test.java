@@ -1,6 +1,6 @@
 package com.project.XXcloud.HDFS;
 
-import org.apache.hadoop.security.SaslOutputStream;
+
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,16 +13,15 @@ public class test
 //        HDFSOperation.uploadFile("qiushuoqi@qqq.com","test.txt",file);
 
 
-        HDFSOperation.deleteFile("qiushuoqi@qq.com","dd.txt");
-
+//        HDFSOperation.deleteFile("qiushuoqi@qq.com","dd.txt");
 
         //创建目录
 //        HDFSOperation.createDir("test@qq.com");
 //
 
         //上传文件
-//        InputStream in=new BufferedInputStream(new FileInputStream("D:\\学校\\实训\\阶段性汇报ppt\\原型.rar"));
-//        HDFSOperation.uploadFile("test@qq.com","原型.rar",in);
+//        InputStream in=new BufferedInputStream(new FileInputStream("C:\\Users\\Amaze\\Desktop\\testFiles\\testWord.doc"));
+//        HDFSOperation.uploadFile("qiushuoqi@qq.com","testWord.doc",in);
 
 
         //获取目录下所有文件名
@@ -44,10 +43,14 @@ public class test
 
 
         //删除文件
-//        HDFSOperation.deleteFile("test@qq.com","原型.rar");
+//        HDFSOperation.deleteFile("qiushuoqi@qq.com","testWord.doc");
+
 
         //删除目录
-//        HDFSOperation.deleteFile("test@qq.com");
+//        HDFSOperation.deleteFile("qiushuoqi@qq.com");
+
+
+
 
     }
 }

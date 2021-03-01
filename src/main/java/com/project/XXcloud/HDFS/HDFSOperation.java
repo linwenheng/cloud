@@ -1,8 +1,6 @@
 package com.project.XXcloud.HDFS;
 
 import XMLUtil.XMLUtil;
-import com.project.XXcloud.FileProcess.FileProcess;
-import com.project.XXcloud.SparkSense.SparkSense;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -91,30 +89,9 @@ public class HDFSOperation
         byteArrayInputStream.close();
         out.close();
 
-        String[] strings=fileName.split("\\.");
-        String tagName=strings[1];
-        FileProcess fileProcess=(FileProcess)XMLUtil.getFileProcessClass(tagName);
-        fileProcess.fileAnalyze(email,fileName,fileSystem,uri);
         fileSystem.close();
         return 0;
     }
-
-
-    public static int uploadFile(String email, String fileName, InputStream in) throws Exception
-    {
-        String uri="hdfs://"+ip+":"+port+"/"+email+"/"+fileName;
-        fileSystem=FileSystem.get(URI.create(uri),conf);
-        OutputStream out=fileSystem.create(new Path(uri));
-        IOUtils.copyBytes(in,out,4096,true);
-        out.close();
-        String[] strings=fileName.split("\\.");
-        String tagName=strings[1];
-        FileProcess fileProcess=(FileProcess)XMLUtil.getFileProcessClass(tagName);
-        fileProcess.fileAnalyze(email,fileName,fileSystem,uri);
-        fileSystem.close();
-        return 0;
-    }
-
 
     /**
     * 获取指定目录下的文件列表
