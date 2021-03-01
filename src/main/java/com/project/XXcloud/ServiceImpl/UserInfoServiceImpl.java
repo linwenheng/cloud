@@ -79,6 +79,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     @Override
     public int updateUserInfo(UserInfo userInfo) {
+        userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
         UserInfoExample userInfoExample = new UserInfoExample();
         userInfoExample.or().andEmailEqualTo(userInfo.getEmail());
         return userInfoMapper.updateByExample(userInfo,userInfoExample);

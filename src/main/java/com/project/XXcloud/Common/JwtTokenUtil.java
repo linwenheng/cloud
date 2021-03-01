@@ -30,10 +30,12 @@ public class JwtTokenUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_CREATED = "created";
-    @Value("${jwt.secret}")
-    private String secret;
-    @Value("${jwt.expiration}")
-    private Long expiration;
+
+    //@Value("${jwt.secret}")
+    private String secret = "mySecret";
+
+    //@Value("${jwt.expiration}")
+    private Long expiration= 604800L;
     /**
      * 根据负责生成JWT的token
      */
@@ -59,6 +61,7 @@ public class JwtTokenUtil {
         try {
             Claims claims = getClaimsFromToken(token);
             username =  claims.getSubject();
+            LOGGER.info("getUsername" + username);
         } catch (Exception e) {
             username = null;
         }
