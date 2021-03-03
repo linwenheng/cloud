@@ -1,5 +1,6 @@
 package com.project.XXcloud.Controller;
 
+import com.project.XXcloud.Dto.FileInfo;
 import com.project.XXcloud.HDFS.HDFSOperation;
 import com.project.XXcloud.Mbg.Mapper.UserInfoMapper;
 import com.project.XXcloud.Mbg.Model.UserFile;
@@ -67,7 +68,10 @@ public class UserFileController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInfoController.class);
     @PostMapping("/file/upload")
     @ResponseBody
-    public int upload(@RequestParam("file") MultipartFile file, String email) {
+    public int upload(FileInfo fileInfo) {
+        MultipartFile file = fileInfo.getFile();
+        int userId = fileInfo.getUserId();
+        String email = userInfoService.selectUserInfoByID(userId).getEmail();
         if (file.isEmpty()) {
             return 0;
         }
