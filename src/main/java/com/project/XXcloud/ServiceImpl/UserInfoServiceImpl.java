@@ -4,6 +4,7 @@ import com.project.XXcloud.Common.JwtTokenUtil;
 import com.project.XXcloud.Mbg.Mapper.UserInfoMapper;
 import com.project.XXcloud.Mbg.Model.UserInfo;
 import com.project.XXcloud.Mbg.Model.UserInfoExample;
+import com.project.XXcloud.Service.RedisService;
 import com.project.XXcloud.Service.UserInfoService;
 import org.omg.CORBA.UserException;
 import org.slf4j.Logger;
@@ -29,6 +30,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     private UserDetailsService userDetailsService;
 
     @Autowired
+    private RedisService redisService;
+
+    @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,11 +52,15 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     @Override
     public UserInfo selectUserInfo(UserInfo userInfo) {
+        UserInfo user = null;
         UserInfoExample userInfoExample = new UserInfoExample();
         userInfoExample.or().andEmailEqualTo(userInfo.getEmail()).andPasswordEqualTo(userInfo.getPassword());
         List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
-        UserInfo user = null;
-        if(userInfos.size() == 1) user = userInfos.get(0);
+
+        if(userInfos.size() == 1) {
+            user = userInfos.get(0);
+            redisService.set(user.getEmail(),user);
+        }
         return user;
     }
 
@@ -61,11 +69,15 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     @Override
     public UserInfo selectUserInfoByEmail(String email) {
+        UserInfo user = null;
+        user = redisService.get(email);
+        if (user != null) return user;
         UserInfoExample userInfoExample = new UserInfoExample();
         userInfoExample.or().andEmailEqualTo(email);
         List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
-        UserInfo user = null;
+
         if(userInfos.size() == 1) user = userInfos.get(0);
+        redisService.set(user.getEmail(),user);
         return user;
     }
 
@@ -82,7 +94,14 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
         UserInfoExample userInfoExample = new UserInfoExample();
         userInfoExample.or().andEmailEqualTo(userInfo.getEmail());
-        return userInfoMapper.updateByExample(userInfo,userInfoExample);
+        int res  = userInfoMapper.updateByExample(userInfo,userInfoExample);
+        if(res == 1)
+        {
+            UserInfo user = redisService.get(userInfo.getEmail());
+            if(user != null) redisService.remove(userInfo.getEmail());
+            redisService.set(userInfo.getEmail(),userInfo);
+        }
+        return res;
     }
     /*
     用户登录（使用Token,security)

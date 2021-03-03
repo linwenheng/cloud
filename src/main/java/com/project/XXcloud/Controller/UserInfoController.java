@@ -111,7 +111,30 @@ public class UserInfoController {
         else
             return false;
     }
-
+    /*
+    *通过邮箱得到用户名
+     */
+    @GetMapping("/user/getUserName")
+    @ResponseBody
+    public String getUserName(String email)
+    {
+        UserInfo userInfo;
+        userInfo=userInfoService.selectUserInfoByEmail(email);
+        if(userInfo == null) return "";
+        return userInfo.getUserName();
+    }
+    /*
+     *通过邮箱得到用户名
+     */
+    @GetMapping("/user/getUseID")
+    @ResponseBody
+    public int getUserID(String email)
+    {
+        UserInfo userInfo;
+        userInfo=userInfoService.selectUserInfoByEmail(email);
+        if(userInfo == null) return -1;
+        return userInfo.getUserId();
+    }
     /*
      *用户登录：邮箱密码正确返回1，失败返回0；
      */
@@ -135,13 +158,7 @@ public class UserInfoController {
     public boolean userInfoChange(UserInfo userInfo)
     {
         UserInfo user;
-        if(redisService.hasKey(userInfo.getEmail()))
-        {
-            user = redisService.get(userInfo.getEmail());
-        }
-        else {
-            user = userInfoService.selectUserInfoByEmail(userInfo.getEmail());
-        }
+        user = userInfoService.selectUserInfoByEmail(userInfo.getEmail());
         user.setPassword(userInfo.getPassword());
         if (user == null) return false;
         userInfoService.updateUserInfo(user);

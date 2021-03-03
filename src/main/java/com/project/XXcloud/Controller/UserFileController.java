@@ -29,25 +29,26 @@ public class UserFileController {
     @Autowired
     private UserFileService userFileService;
 
-    @GetMapping("/upload")
-    public String upload() {
-        return "upload";
-    }
 
-    @GetMapping("/download")
-    public String download() {
-        return "download";
-    }
     /*
-    *查询文件列表
+    *查询文件列表(用户所有文件）
      */
     @PostMapping("/file/list")
     @ResponseBody
-    public List<UserFile> getFileList(int userId)
+    public List<UserFile> getFileList(int userID)
     {
-        return userFileService.seleteFile(userId);
+        return userFileService.seleteFile(userID);
     }
 
+    /*
+     *查询文件列表(指定类型文件）
+     */
+    @PostMapping("/file/mulTypeFile")
+    @ResponseBody
+    public List<UserFile> getMulTypeList(int userID,int... fileTypes)
+    {
+        return userFileService.seleteMulTypeFIle(userID,fileTypes);
+    }
     /*
     *删除文件
      */
@@ -64,7 +65,7 @@ public class UserFileController {
      * 上传成功返回1，空文件返回0，上传失败返回-1
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInfoController.class);
-    @PostMapping("/upload")
+    @PostMapping("/file/upload")
     @ResponseBody
     public int upload(@RequestParam("file") MultipartFile file, String email) {
         if (file.isEmpty()) {
@@ -80,6 +81,12 @@ public class UserFileController {
             userFile.setCreateDate(new Date());
             userFile.setUserId(userInfoService.selectUserInfoByEmail(email).getUserId());
             userFile.setFileName(fileName);
+            int fileType = 0;
+            if(fileName.endsWith(".txt")) fileType = 0;
+            if(fileName.endsWith(".doc")) fileType = 1;
+            if(fileName.endsWith(".jpg")) fileType = 2;
+            if(fileName.endsWith(".png")) fileType = 3;
+            userFile.setFileType(fileType);
             userFileService.uploadFile(userFile);
             LOGGER.info("上传成功");
             return 1;
@@ -92,7 +99,7 @@ public class UserFileController {
     *下载文件
     * 参数1为文件名，参数2为用户邮箱
      */
-    @PostMapping("/download")
+    @PostMapping("/file/download")
     @ResponseBody
     public void download(String filename, String email, HttpServletRequest request, HttpServletResponse response) throws IOException {
 

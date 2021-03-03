@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -25,6 +27,19 @@ public class UserFileServiceImpl implements UserFileService {
     public List<UserFile> seleteFile(int userId) {
         UserFileExample userFileExample = new UserFileExample();
         userFileExample.or().andUserIdEqualTo(userId);
+        return userFileMapper.selectByExample(userFileExample);
+    }
+
+    @Override
+    public List<UserFile> seleteMulTypeFIle(int userId, int... fileTypes) {
+        UserFileExample userFileExample = new UserFileExample();
+        List<Integer> list = new ArrayList<>();
+        for(int i:fileTypes)
+        {
+            list.add(i);
+        }
+        userFileExample.or().andUserIdEqualTo(userId).andFileTypeIn(list);
+
         return userFileMapper.selectByExample(userFileExample);
     }
 
