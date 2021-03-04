@@ -24,14 +24,31 @@ public class UserFileServiceImpl implements UserFileService {
     }
 
     @Override
-    public List<UserFile> seleteFile(int userId) {
+    public List<UserFile> selectFiles(int userId) {
         UserFileExample userFileExample = new UserFileExample();
         userFileExample.or().andUserIdEqualTo(userId);
         return userFileMapper.selectByExample(userFileExample);
     }
 
     @Override
-    public List<UserFile> seleteMulTypeFIle(int userId, int... fileTypes) {
+    public UserFile selectFile(int userId,String filename) {
+        UserFileExample userFileExample = new UserFileExample();
+        userFileExample.or().andUserIdEqualTo(userId).andFileNameEqualTo(filename);
+        List<UserFile> list = userFileMapper.selectByExample(userFileExample);
+        if(list.size() == 1) return list.get(0);
+        return null;
+    }
+
+    @Override
+    public List<UserFile> selectFiles(int userId, String keyWord) {
+        UserFileExample userFileExample = new UserFileExample();
+        userFileExample.or().andUserIdEqualTo(userId).andFileNameLike("%" + keyWord+"%");
+        List<UserFile> list = userFileMapper.selectByExample(userFileExample);
+        return list;
+    }
+
+    @Override
+    public List<UserFile> selectMulTypeFIles(int userId, int... fileTypes) {
         UserFileExample userFileExample = new UserFileExample();
         List<Integer> list = new ArrayList<>();
         for(int i:fileTypes)

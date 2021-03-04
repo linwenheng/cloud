@@ -2,13 +2,9 @@ package com.project.XXcloud.Controller;
 
 import com.project.XXcloud.Dto.FileInfo;
 import com.project.XXcloud.HDFS.HDFSOperation;
-import com.project.XXcloud.Mbg.Mapper.UserInfoMapper;
 import com.project.XXcloud.Mbg.Model.UserFile;
-import com.project.XXcloud.Service.RedisService;
 import com.project.XXcloud.Service.UserFileService;
 import com.project.XXcloud.Service.UserInfoService;
-import io.netty.util.internal.UnstableApi;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,22 +29,35 @@ public class UserFileController {
 
     /*
     *查询文件列表(用户所有文件）
+    * userID 用户ID
      */
     @PostMapping("/file/list")
     @ResponseBody
     public List<UserFile> getFileList(int userID)
     {
-        return userFileService.seleteFile(userID);
+        return userFileService.selectFiles(userID);
     }
 
     /*
      *查询文件列表(指定类型文件）
+     * userID 文件所属用户ID，fileTypes 文件类型
      */
     @PostMapping("/file/mulTypeFile")
     @ResponseBody
     public List<UserFile> getMulTypeList(int userID,int... fileTypes)
     {
-        return userFileService.seleteMulTypeFIle(userID,fileTypes);
+        return userFileService.selectMulTypeFIles(userID,fileTypes);
+    }
+
+    /*
+     *查询文件列表(指定关键词）
+     * userID 文件所属用户ID，keyword 关键词
+     */
+    @PostMapping("/file/selectByKeyword")
+    @ResponseBody
+    public List<UserFile> selectByKeyword(int userID,String keyword)
+    {
+        return userFileService.selectFiles(userID,keyword);
     }
     /*
     *删除文件
@@ -57,6 +66,7 @@ public class UserFileController {
     @ResponseBody
     public int deleteFile(int userId,String filename) throws IOException
     {
+
         String email = userInfoService.selectUserInfoByID(userId).getEmail();
         HDFSOperation.deleteFile(email,filename);
         return userFileService.deleteFile(userId,filename);
@@ -79,27 +89,41 @@ public class UserFileController {
         }
 
         String fileName = file.getOriginalFilename();
-        try {
-
-            HDFSOperation.uploadFile(email,fileName,file.getBytes());
-
-            UserFile userFile = new UserFile();
-            userFile.setCreateDate(new Date());
-            userFile.setUserId(userId);
-            userFile.setFileName(fileName);
-            int fileType = 0;
-            if(fileName.endsWith(".txt")) fileType = 0;
-            if(fileName.endsWith(".doc")) fileType = 1;
-            if(fileName.endsWith(".jpg")) fileType = 2;
-            if(fileName.endsWith(".png")) fileType = 3;
-            userFile.setFileType(fileType);
-            userFileService.uploadFile(userFile);
-            LOGGER.info("上传成功");
-            return 1;
-        } catch (IOException e) {
-            LOGGER.error(e.toString(), e);
-        }
-        return -1;
+        if(userFileService.selectFile(userId,fileName) != null) userFileService.deleteFile(userId,fileName);
+        UserFile userFile = new UserFile();
+        userFile.setCreateDate(new Date());
+        userFile.setUserId(userId);
+        userFile.setFileName(fileName);
+        int fileType = 0;
+        if(fileName.endsWith(".txt")) fileType = 0;
+        if(fileName.endsWith(".doc")) fileType = 1;
+        if(fileName.endsWith(".jpg")) fileType = 2;
+        if(fileName.endsWith(".png")) fileType = 3;
+        userFile.setFileType(fileType);
+        userFileService.uploadFile(userFile);
+        LOGGER.info("上传成功");
+        return 1;
+//        try {
+//
+//            HDFSOperation.uploadFile(email,fileName,file.getBytes());
+//
+//            UserFile userFile = new UserFile();
+//            userFile.setCreateDate(new Date());
+//            userFile.setUserId(userId);
+//            userFile.setFileName(fileName);
+//            int fileType = 0;
+//            if(fileName.endsWith(".txt")) fileType = 0;
+//            if(fileName.endsWith(".doc")) fileType = 1;
+//            if(fileName.endsWith(".jpg")) fileType = 2;
+//            if(fileName.endsWith(".png")) fileType = 3;
+//            userFile.setFileType(fileType);
+//            userFileService.uploadFile(userFile);
+//            LOGGER.info("上传成功");
+//            return 1;
+//        } catch (IOException e) {
+//            LOGGER.error(e.toString(), e);
+//        }
+//        return -1;
     }
     /*
     *下载文件

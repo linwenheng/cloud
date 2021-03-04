@@ -1,5 +1,6 @@
 package com.project.XXcloud.Controller;
 
+import com.project.XXcloud.Dto.UserInfo_pre;
 import com.project.XXcloud.Email.MailServiceImpl;
 import com.project.XXcloud.HDFS.HDFSOperation;
 import com.project.XXcloud.Mbg.Model.UserInfo;
@@ -135,7 +136,19 @@ public class UserInfoController {
         if(userInfo == null) return -1;
         return userInfo.getUserId();
     }
-
+    /*
+     *通过邮箱得到用户信息
+     */
+    @GetMapping("/user/getUserIDUserName")
+    @ResponseBody
+    public UserInfo_pre getUserInfo_pre(String email)
+    {
+        UserInfo userInfo;
+        userInfo=userInfoService.selectUserInfoByEmail(email);
+        if(userInfo == null) return null;
+        UserInfo_pre userInfo_pre = new UserInfo_pre(userInfo);
+        return userInfo_pre;
+    }
     /*
      *通过UserID得到用户名
      */
@@ -148,6 +161,7 @@ public class UserInfoController {
         if(userInfo == null) return "";
         return userInfo.getUserName();
     }
+
     /*
      *用户登录：邮箱密码正确返回1，失败返回0；
      */
