@@ -76,8 +76,10 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfoExample.or().andEmailEqualTo(email);
         List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
 
-        if(userInfos.size() == 1) user = userInfos.get(0);
-        redisService.set(user.getEmail(),user);
+        if(userInfos.size() == 1) {
+            user = userInfos.get(0);
+            redisService.set(user.getEmail(),user);
+        }
         return user;
     }
 
@@ -95,12 +97,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfoExample userInfoExample = new UserInfoExample();
         userInfoExample.or().andEmailEqualTo(userInfo.getEmail());
         int res  = userInfoMapper.updateByExample(userInfo,userInfoExample);
-        if(res == 1)
-        {
-            UserInfo user = redisService.get(userInfo.getEmail());
-            if(user != null) redisService.remove(userInfo.getEmail());
-            redisService.set(userInfo.getEmail(),userInfo);
-        }
+        redisService.remove(userInfo.getEmail());
         return res;
     }
     /*

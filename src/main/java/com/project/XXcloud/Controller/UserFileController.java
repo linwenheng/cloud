@@ -71,6 +71,7 @@ public class UserFileController {
     public int upload(FileInfo fileInfo) {
         MultipartFile file = fileInfo.getFile();
         int userId = fileInfo.getUserId();
+        LOGGER.info("UserID" + String.valueOf(userId));
         String email = userInfoService.selectUserInfoByID(userId).getEmail();
         if (file.isEmpty()) {
             return 0;
@@ -83,7 +84,7 @@ public class UserFileController {
 
             UserFile userFile = new UserFile();
             userFile.setCreateDate(new Date());
-            userFile.setUserId(userInfoService.selectUserInfoByEmail(email).getUserId());
+            userFile.setUserId(userId);
             userFile.setFileName(fileName);
             int fileType = 0;
             if(fileName.endsWith(".txt")) fileType = 0;
