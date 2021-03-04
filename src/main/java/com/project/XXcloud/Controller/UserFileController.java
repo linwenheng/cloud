@@ -55,8 +55,9 @@ public class UserFileController {
      */
     @PostMapping("/file/delete")
     @ResponseBody
-    public int deleteFile(int userId,String email,String filename) throws IOException
+    public int deleteFile(int userId,String filename) throws IOException
     {
+        String email = userInfoService.selectUserInfoByID(userId).getEmail();
         HDFSOperation.deleteFile(email,filename);
         return userFileService.deleteFile(userId,filename);
     }
@@ -106,8 +107,8 @@ public class UserFileController {
      */
     @PostMapping("/file/download")
     @ResponseBody
-    public void download(String filename, String email, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+    public void download(String filename, int userId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String email = userInfoService.selectUserInfoByID(userId).getEmail();
         String mimeType=request.getServletContext().getMimeType(filename);
         response.setContentType(mimeType);
         response.setHeader("Content-Disposition","attachement;filename="+filename);

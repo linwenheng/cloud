@@ -126,7 +126,7 @@ public class UserInfoController {
     /*
      *通过邮箱得到用户名
      */
-    @GetMapping("/user/getUseID")
+    @GetMapping("/user/getUserID")
     @ResponseBody
     public int getUserID(String email)
     {
