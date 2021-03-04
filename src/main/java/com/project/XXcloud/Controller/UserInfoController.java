@@ -135,6 +135,19 @@ public class UserInfoController {
         if(userInfo == null) return -1;
         return userInfo.getUserId();
     }
+
+    /*
+     *通过UserID得到用户名
+     */
+    @GetMapping("/user/getUserNameByUserID")
+    @ResponseBody
+    public String getUserName(int userID)
+    {
+        UserInfo userInfo;
+        userInfo=userInfoService.selectUserInfoByID(userID);
+        if(userInfo == null) return "";
+        return userInfo.getUserName();
+    }
     /*
      *用户登录：邮箱密码正确返回1，失败返回0；
      */
