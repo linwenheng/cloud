@@ -141,7 +141,7 @@ public class UserInfoController {
      */
     @GetMapping("/user/getUserIDUserName")
     @ResponseBody
-    public UserInfo_pre getUserInfo_pre(String email)
+    public UserInfo_pre getUserInfo_pro(String email)
     {
         UserInfo userInfo;
         userInfo=userInfoService.selectUserInfoByEmail(email);

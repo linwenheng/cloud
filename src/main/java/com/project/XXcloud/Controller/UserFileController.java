@@ -89,41 +89,28 @@ public class UserFileController {
         }
 
         String fileName = file.getOriginalFilename();
-        if(userFileService.selectFile(userId,fileName) != null) userFileService.deleteFile(userId,fileName);
-        UserFile userFile = new UserFile();
-        userFile.setCreateDate(new Date());
-        userFile.setUserId(userId);
-        userFile.setFileName(fileName);
-        int fileType = 0;
-        if(fileName.endsWith(".txt")) fileType = 0;
-        if(fileName.endsWith(".doc")) fileType = 1;
-        if(fileName.endsWith(".jpg")) fileType = 2;
-        if(fileName.endsWith(".png")) fileType = 3;
-        userFile.setFileType(fileType);
-        userFileService.uploadFile(userFile);
-        LOGGER.info("上传成功");
-        return 1;
-//        try {
-//
-//            HDFSOperation.uploadFile(email,fileName,file.getBytes());
-//
-//            UserFile userFile = new UserFile();
-//            userFile.setCreateDate(new Date());
-//            userFile.setUserId(userId);
-//            userFile.setFileName(fileName);
-//            int fileType = 0;
-//            if(fileName.endsWith(".txt")) fileType = 0;
-//            if(fileName.endsWith(".doc")) fileType = 1;
-//            if(fileName.endsWith(".jpg")) fileType = 2;
-//            if(fileName.endsWith(".png")) fileType = 3;
-//            userFile.setFileType(fileType);
-//            userFileService.uploadFile(userFile);
-//            LOGGER.info("上传成功");
-//            return 1;
-//        } catch (IOException e) {
-//            LOGGER.error(e.toString(), e);
-//        }
-//        return -1;
+
+        try {
+
+            HDFSOperation.uploadFile(email,fileName,file.getBytes());
+            if(userFileService.selectFile(userId,fileName) != null) userFileService.deleteFile(userId,fileName);
+            UserFile userFile = new UserFile();
+            userFile.setCreateDate(new Date());
+            userFile.setUserId(userId);
+            userFile.setFileName(fileName);
+            int fileType = 0;
+            if(fileName.endsWith(".txt")) fileType = 0;
+            if(fileName.endsWith(".doc")) fileType = 1;
+            if(fileName.endsWith(".jpg")) fileType = 2;
+            if(fileName.endsWith(".png")) fileType = 3;
+            userFile.setFileType(fileType);
+            userFileService.uploadFile(userFile);
+            LOGGER.info("上传成功");
+            return 1;
+        } catch (IOException e) {
+            LOGGER.error(e.toString(), e);
+        }
+        return -1;
     }
     /*
     *下载文件
